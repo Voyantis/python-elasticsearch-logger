@@ -300,7 +300,8 @@ class CMRESHandler(logging.Handler):
                 eshelpers.bulk(
                     client=self.__get_es_client(),
                     actions=actions,
-                    stats_only=True
+                    stats_only=True,
+                    max_retries=10,
                 )
             except Exception as exception:
                 if self.raise_on_indexing_exceptions:
