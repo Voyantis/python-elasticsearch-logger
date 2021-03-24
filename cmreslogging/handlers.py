@@ -11,12 +11,14 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 
 try:
     from requests_kerberos import HTTPKerberosAuth, DISABLED
+
     CMR_KERBEROS_SUPPORTED = True
 except ImportError:
     CMR_KERBEROS_SUPPORTED = False
 
 try:
     from requests_aws4auth import AWS4Auth
+
     AWS4AUTH_SUPPORTED = True
 except ImportError:
     AWS4AUTH_SUPPORTED = False
@@ -133,6 +135,7 @@ class CMRESHandler(logging.Handler):
                  verify_ssl=__DEFAULT_VERIFY_SSL,
                  buffer_size=__DEFAULT_BUFFER_SIZE,
                  flush_frequency_in_sec=__DEFAULT_FLUSH_FREQ_INSEC,
+                 max_retries=10,
                  es_index_name=__DEFAULT_ES_INDEX_NAME,
                  index_name_frequency=__DEFAULT_INDEX_FREQUENCY,
                  es_doc_type=__DEFAULT_ES_DOC_TYPE,
@@ -186,6 +189,7 @@ class CMRESHandler(logging.Handler):
         self.verify_certs = verify_ssl
         self.buffer_size = buffer_size
         self.flush_frequency_in_sec = flush_frequency_in_sec
+        self.max_retries = max_retries
         self.es_index_name = es_index_name
         self.index_name_frequency = index_name_frequency
         self.es_doc_type = es_doc_type
@@ -301,7 +305,7 @@ class CMRESHandler(logging.Handler):
                     client=self.__get_es_client(),
                     actions=actions,
                     stats_only=True,
-                    max_retries=10,
+                    max_retries=self.max_retries,
                 )
             except Exception as exception:
                 if self.raise_on_indexing_exceptions:
