@@ -301,17 +301,21 @@ class CMRESHandler(logging.Handler):
                     }
                     for log_record in logs_buffer
                 )
-                errors = eshelpers.bulk(
+                success_count, errors = eshelpers.bulk(
                     client=self.__get_es_client(),
                     actions=actions,
                     stats_only=False,
                     max_retries=self.max_retries,
                 )
                 if len(errors) > 0:
-                    with open('es_logs_errors' + str(datetime.datetime.utcnow())) as errors_file:
+                    filename='es_logs_errors' + str(datetime.datetime.utcnow()) + '.log'
+                    with open(filename, 'w') as errors_file:
                         for err in errors:
                             errors_file.write("%s\n" % err)
             except Exception as exception:
+                filename = 'es_logs_errors' + str(datetime.datetime.utcnow()) + '.log'
+                with open(filename, 'w') as errors_file:
+                    errors_file.write("%s\n" % exception)
                 if self.raise_on_indexing_exceptions:
                     raise exception
 
