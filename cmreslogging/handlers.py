@@ -280,6 +280,15 @@ class CMRESHandler(logging.Handler):
         current_date = datetime.datetime.utcfromtimestamp(timestamp)
         return "{0!s}.{1:03d}Z".format(current_date.strftime('%Y-%m-%dT%H:%M:%S'), int(current_date.microsecond / 1000))
 
+    def error_handler(self, exception, errors):
+        """
+        This function can be implemented by the client to handle errors that happen when trying to write logs to ES.
+        Both params are optional. But one must exist.
+        :param exception python exception that raised while writing to ES (optional)
+        :param errors a list of errors returned by the bulk operation (optional)
+        """
+        pass
+
     def flush(self):
         """ Flushes the buffer into ES
         :return: None
@@ -308,14 +317,9 @@ class CMRESHandler(logging.Handler):
                     max_retries=self.max_retries,
                 )
                 if len(errors) > 0:
-                    filename='es_logs_errors' + str(datetime.datetime.utcnow()) + '.log'
-                    with open(filename, 'w') as errors_file:
-                        for err in errors:
-                            errors_file.write("%s\n" % err)
+                    self.error_handler(None, errors)
             except Exception as exception:
-                filename = 'es_logs_errors' + str(datetime.datetime.utcnow()) + '.log'
-                with open(filename, 'w') as errors_file:
-                    errors_file.write("%s\n" % exception)
+                self.error_handler(exception, None)
                 if self.raise_on_indexing_exceptions:
                     raise exception
 
