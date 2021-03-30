@@ -280,12 +280,10 @@ class CMRESHandler(logging.Handler):
         current_date = datetime.datetime.utcfromtimestamp(timestamp)
         return "{0!s}.{1:03d}Z".format(current_date.strftime('%Y-%m-%dT%H:%M:%S'), int(current_date.microsecond / 1000))
 
-    def error_handler(self, exception, errors):
+    def error_handler(self, exception):
         """
         This function can be implemented by the client to handle errors that happen when trying to write logs to ES.
-        Both params are optional. But one must exist.
-        :param exception python exception that raised while writing to ES (optional)
-        :param errors a list of errors returned by the bulk operation (optional)
+        :param exception python exception that raised while writing to ES
         """
         pass
 
@@ -310,16 +308,17 @@ class CMRESHandler(logging.Handler):
                     }
                     for log_record in logs_buffer
                 )
-                success_count, errors = eshelpers.bulk(
+                # say we send 100 records, and get errors from 3.
+                # Then 97 will be uploaded successfully and an exception will be raised with a summary of the 3 errors.
+                # that's why we don't need the return value from the bulk.
+                eshelpers.bulk(
                     client=self.__get_es_client(),
                     actions=actions,
-                    stats_only=False,
+                    stats_only=True,
                     max_retries=self.max_retries,
                 )
-                if len(errors) > 0:
-                    self.error_handler(None, errors)
             except Exception as exception:
-                self.error_handler(exception, None)
+                self.error_handler(exception)
                 if self.raise_on_indexing_exceptions:
                     raise exception
 
