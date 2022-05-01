@@ -22,10 +22,6 @@ dependencies = [
     'requests'
 ]
 
-# If python version is above 3.4 (built in enums supported enums)
-if sys.version_info <= (3,4):
-    dependencies.append('enum')
-
 print("List of dependencies : {0}".format(str(dependencies)))
 
 setup(
@@ -67,7 +63,6 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
     ],
 
