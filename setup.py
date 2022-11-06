@@ -25,18 +25,18 @@ dependencies = [
 print("List of dependencies : {0}".format(str(dependencies)))
 
 setup(
-    name='CMRESHandler',
+    name='vycmreshandler',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0.0',
 
-    description='Elasticsearch Log handler for the logging library',
+    description='Voyantis fork - Elasticsearch Log handler for the logging library',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/cmanaha/python-elasticsearch-logger',
+    url='https://github.com/Voyantis/python-elasticsearch-logger',
 
     # Author details
     author='Carlos Manzanedo Rueda',
