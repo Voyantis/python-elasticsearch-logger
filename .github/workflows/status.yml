@@ -1,0 +1,11 @@
+name: Status-check
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Main repository
+        uses: actions/checkout@v3
